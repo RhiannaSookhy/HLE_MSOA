@@ -1,26 +1,40 @@
 #Date 28/07/2026
-
 #Author Rhianna Sookhy
 
-#Weights IMD 2015 & 2025 based on mid 2012 and 2022 populations following ONS methodology for LAD
+# This script prepares IMD 2015 and IMD 2025 data for MSOA and LA areas.
+#
+# It:
+# - Loads IMD data and geographical lookup files.
+# - Links LSOAs to MSOAs and LADs.
+# - Calculates population-weighted average IMD scores and ranks.
+# - Produces rankings and deciles for each deprivation domain.
+# - Processes both IMD 2015 and IMD 2025.
+# - Adjusts IMD 2015 data for MSOAs that were merged between 2011 and 2021.
+# - Combines unchanged and merged MSOAs into a final 2015 dataset.
+# - Keeps the main average score variables for the final outputs.
+# - Saves the final MSOA and LAD datasets as CSV files.
+#
+# The population weights use mid-2012 population for IMD 2015
+# and mid-2022 population for IMD 2025, following ONS methodology.
 
-#########################
 
-
-#TO QA Check:
+#TO QA Check against:
 #2025 matches this https://justknowledge.org.uk/blog/imd
 # 2019 LAD macthes file 10 (https://www.gov.uk/government/statistics/english-indices-of-deprivation-2015)
 # 2025 LAD matches  file 10 (https://www.gov.uk/government/statistics/english-indices-of-deprivation-2025)
+
+
+#===============================================================================
 
 rm(list = ls())
 
 library(readr)
 library(dplyr)
 library(tibble)
+library(janitor)
 
 #Edit depending
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
-
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
 #Creating functions
 weighted_mean_pop <- function(x, w) {
@@ -300,7 +314,7 @@ domains <- tribble(
 imd_2015_results <- process_imd(
   
   imd_file =
-    "Raw data/File_7_ID_2015_All_ranks__deciles_and_scores_for_the_Indices_of_Deprivation__and_population_denominators.csv",
+    "Raw data/File_7_ID_2015_All_ranks__deciles_and_scores_for_the_IMD.csv",
   
   lookup_file =
     "Raw data/oa_lsoa_msoa_lad_2011.csv",
@@ -393,7 +407,7 @@ imd_2025_lad  <- imd_2025_results$lad
 
 #Load data
 imd_2015 <- read_csv(
-  "Raw data/File_7_ID_2015_All_ranks__deciles_and_scores_for_the_Indices_of_Deprivation__and_population_denominators.csv",
+  "Raw data/File_7_ID_2015_All_ranks__deciles_and_scores_for_the_IMD.csv",
   show_col_types = FALSE
 )
 
@@ -427,7 +441,7 @@ imd_2015_lsoa <- msoa_lsoa_2011 %>%
 
 #Only keeping merged MSOA's
 msoa_lookup_M <- read_csv(
-  "Raw data/MSOA_(2011)_to_MSOA_(2021)_to_Local_Authority_District_(2022)_Exact_Fit_Lookup_for_EW_(V2) (2).csv",
+  "Raw data/MSOA_(2011)_to_MSOA_(2021).csv",
   show_col_types = FALSE
 ) %>%
   select(
@@ -934,7 +948,8 @@ imd_2015_final_lad <- imd_2015_results$lad %>%
   keep_scores()
 
 # Save outputs
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA/Working files")
+#setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA/Working files")
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2/Working files")
 
 write_csv(imd_2015_final_msoa,
           "imd_2015_final_msoa.csv")

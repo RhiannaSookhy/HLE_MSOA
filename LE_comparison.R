@@ -1,10 +1,29 @@
-#LE comparison between 2209-13 & 2019-23 by region and IMD =====================
-
-#Information ...
-
-#Please run the following scripts before this ....
-
-
+# ============================================================
+# Purpose of script
+#
+# This script examines changes in life expectancy across MSOAs.
+#
+# It compares male and female life expectancy changes.
+#
+# It identifies MSOAs where life expectancy:
+#   - increased
+#   - decreased
+#   - changed for both males and females
+#
+# It examines these changes by:
+#   - English region
+#   - IMD 2015 deprivation decile
+#   - IMD 2025 deprivation decile
+#   - IMD 2025 deprivation quintile
+#
+# The script calculates:
+#   - number of MSOAs affected
+#   - percentage of MSOAs affected
+#   - changes above specific thresholds
+#   - results for males and females separately
+#   - results where both sexes increased or decreased
+#
+#============================================================
 
 #Clear environment and load libraries 
 rm(list = ls())
@@ -1671,9 +1690,9 @@ decreased_quintiles_all
 
 
 ###All of the above but increased
+# All Other = D1-D9 (i.e. everything except the least deprived decile, D10)
 
 both_increased_deciles <- msoa_data_complete %>%
-  
   group_by(Region, imd_decile_2025) %>%
   summarise(
     n = sum(
@@ -1683,42 +1702,35 @@ both_increased_deciles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # D2-D10 combined = All Other
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_decile_2025 >= 2],
+      n[imd_decile_2025 <= 9],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_decile_2025,
     values_from = c(n, pct),
     names_glue = "D{imd_decile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -1736,10 +1748,8 @@ both_increased_deciles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     D1_n, D1_pct,
     D2_n, D2_pct,
     D3_n, D3_pct,
@@ -1750,20 +1760,17 @@ both_increased_deciles <- msoa_data_complete %>%
     D8_n, D8_pct,
     D9_n, D9_pct,
     D10_n, D10_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
 
-
 both_increased_deciles
 
-#Females
+
+# Females
 females_increased_deciles <- msoa_data_complete %>%
-  
   group_by(Region, imd_decile_2025) %>%
   summarise(
     n = sum(
@@ -1772,42 +1779,35 @@ females_increased_deciles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # D2-D10 combined
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_decile_2025 >= 2],
+      n[imd_decile_2025 <= 9],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_decile_2025,
     values_from = c(n, pct),
     names_glue = "D{imd_decile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -1824,10 +1824,8 @@ females_increased_deciles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     D1_n, D1_pct,
     D2_n, D2_pct,
     D3_n, D3_pct,
@@ -1838,19 +1836,17 @@ females_increased_deciles <- msoa_data_complete %>%
     D8_n, D8_pct,
     D9_n, D9_pct,
     D10_n, D10_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
 
-
 females_increased_deciles
 
+
+# Males
 males_increased_deciles <- msoa_data_complete %>%
-  
   group_by(Region, imd_decile_2025) %>%
   summarise(
     n = sum(
@@ -1859,42 +1855,35 @@ males_increased_deciles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # D2-D10 combined
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_decile_2025 >= 2],
+      n[imd_decile_2025 <= 9],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_decile_2025,
     values_from = c(n, pct),
     names_glue = "D{imd_decile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -1911,10 +1900,8 @@ males_increased_deciles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     D1_n, D1_pct,
     D2_n, D2_pct,
     D3_n, D3_pct,
@@ -1925,14 +1912,11 @@ males_increased_deciles <- msoa_data_complete %>%
     D8_n, D8_pct,
     D9_n, D9_pct,
     D10_n, D10_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
-
 
 males_increased_deciles
 
@@ -2014,8 +1998,9 @@ combined_increased_deciles
 
 #Now quintiles
 
+# Quintiles
+
 both_increased_quintiles <- msoa_data_complete %>%
-  
   group_by(Region, imd_quintile_2025) %>%
   summarise(
     n = sum(
@@ -2025,42 +2010,36 @@ both_increased_quintiles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # Q2-Q5 combined = All Other
+  # Q1-Q4 combined = All Other
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_quintile_2025 >= 2],
+      n[imd_quintile_2025 <= 4],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_quintile_2025,
     values_from = c(n, pct),
     names_glue = "Q{imd_quintile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -2078,30 +2057,24 @@ both_increased_quintiles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     Q1_n, Q1_pct,
     Q2_n, Q2_pct,
     Q3_n, Q3_pct,
     Q4_n, Q4_pct,
     Q5_n, Q5_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
 
-
 both_increased_quintiles
 
 
-#females
+# Females
 females_increased_quintiles <- msoa_data_complete %>%
-  
   group_by(Region, imd_quintile_2025) %>%
   summarise(
     n = sum(
@@ -2110,42 +2083,36 @@ females_increased_quintiles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # Q2-Q5 combined
+  # Q1-Q4 combined = All Other
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_quintile_2025 >= 2],
+      n[imd_quintile_2025 <= 4],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_quintile_2025,
     values_from = c(n, pct),
     names_glue = "Q{imd_quintile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -2162,30 +2129,24 @@ females_increased_quintiles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     Q1_n, Q1_pct,
     Q2_n, Q2_pct,
     Q3_n, Q3_pct,
     Q4_n, Q4_pct,
     Q5_n, Q5_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
 
-
 females_increased_quintiles
 
 
-#Males
+# Males
 males_increased_quintiles <- msoa_data_complete %>%
-  
   group_by(Region, imd_quintile_2025) %>%
   summarise(
     n = sum(
@@ -2194,42 +2155,36 @@ males_increased_quintiles <- msoa_data_complete %>%
     ),
     .groups = "drop"
   ) %>%
-  
   left_join(
     msoa_data_complete %>%
       count(Region, name = "total_msoas"),
     by = "Region"
   ) %>%
-  
   mutate(
     pct = 100 * n / total_msoas
   ) %>%
-  
-  # Q2-Q5 combined
+  # Q1-Q4 combined = All Other
   group_by(Region) %>%
   mutate(
     All_other_n = sum(
-      n[imd_quintile_2025 >= 2],
+      n[imd_quintile_2025 <= 4],
       na.rm = TRUE
     ),
     All_other_pct =
       100 * All_other_n / first(total_msoas)
   ) %>%
   ungroup() %>%
-  
   pivot_wider(
     names_from = imd_quintile_2025,
     values_from = c(n, pct),
     names_glue = "Q{imd_quintile_2025}_{.value}"
   ) %>%
-  
   group_by(Region) %>%
   mutate(
     All_other_n = first(All_other_n),
     All_other_pct = first(All_other_pct)
   ) %>%
   ungroup() %>%
-  
   left_join(
     msoa_data_complete %>%
       group_by(Region) %>%
@@ -2246,23 +2201,18 @@ males_increased_quintiles <- msoa_data_complete %>%
       ),
     by = "Region"
   ) %>%
-  
   select(
     Region,
-    
     Q1_n, Q1_pct,
     Q2_n, Q2_pct,
     Q3_n, Q3_pct,
     Q4_n, Q4_pct,
     Q5_n, Q5_pct,
-    
     All_other_n,
     All_other_pct,
-    
     overall_n,
     overall_pct
   )
-
 
 males_increased_quintiles
 
@@ -2344,7 +2294,7 @@ library(ggbeeswarm)
 plot_males <- msoa_data_complete %>%
   filter(!is.na(LE_change_M)) %>%
   mutate(
-    LE_index = 1 + LE_change_M,
+    LE_index = LE_change_M,
     direction = case_when(
       LE_change_M > 0 ~ "Increased",
       LE_change_M < 0 ~ "Decreased",
