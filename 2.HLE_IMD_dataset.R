@@ -10,12 +10,13 @@ library(readr)
 library(dplyr)
 library(stringr)
 
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+#setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
 #load in data
 
 msoa_lookup <- read_csv(
-  "Raw data/MSOA_(2011)_to_MSOA_(2021)_to_Local_Authority_District_(2022)_Exact_Fit_Lookup_for_EW_(V2) (2).csv"
+  "Raw data/MSOA_(2011)_to_MSOA_(2021).csv"
 )
 
 hle_males <- read_excel(
@@ -77,6 +78,7 @@ hle_males_2011 <- hle_males %>%
   )
 
 #Just values - uncomment for cls
+
 # hle_males_2011 <- hle_males %>%
 #   rename(
 #     MSOA11CD = `MSOA Codes`,
@@ -354,10 +356,8 @@ msoa_lookup_final_missing <- msoa_lookup_final %>%
 # ###
 
 #Corrected
-# ---------------------------------------------------------
-# Read IMD 2015
-# ---------------------------------------------------------
 
+# Read IMD 2015
 imd_2015 <- read_csv(
   "Working files/imd_2015_final_merged.csv",
   show_col_types = FALSE
@@ -367,10 +367,7 @@ imd_2015 <- read_csv(
     -MSOA11CD
   )
 
-
-# ---------------------------------------------------------
 # Read IMD 2025
-# ---------------------------------------------------------
 
 imd_2025 <- read_csv(
   "Working files/imd_2025_final_msoa.csv",
@@ -381,10 +378,7 @@ imd_2025 <- read_csv(
     -MSOA21CD
   )
 
-
-# ---------------------------------------------------------
 # First join: 2015 IMD using MSOA11CD
-# ---------------------------------------------------------
 
 msoa_lookup_final <- msoa_lookup_final %>%
   left_join(
@@ -392,11 +386,9 @@ msoa_lookup_final <- msoa_lookup_final %>%
     by = "MSOA11CD"
   )
 
-
-# ---------------------------------------------------------
 # Second join: 2015 IMD using MSOA21CD
 # This catches the merged MSOAs
-# ---------------------------------------------------------
+
 
 imd_2015_by_2021 <- imd_2015 %>%
   rename(
@@ -415,9 +407,7 @@ msoa_lookup_final <- msoa_lookup_final %>%
   )
 
 
-# ---------------------------------------------------------
 # Fill missing 2015 values with the MSOA21 match
-# ---------------------------------------------------------
 
 msoa_lookup_final <- msoa_lookup_final %>%
   mutate(
@@ -438,9 +428,7 @@ msoa_lookup_final <- msoa_lookup_final %>%
     -ends_with("_fallback")
   )
 
-# ---------------------------------------------------------
 # Join 2025 IMD
-# ---------------------------------------------------------
 
 msoa_lookup_final <- msoa_lookup_final %>%
   left_join(
@@ -450,12 +438,9 @@ msoa_lookup_final <- msoa_lookup_final %>%
 
 
 # ---------------------------------------------------------
-# Save
-# ---------------------------------------------------------
+# Save/ recall for subsequent scripts 
 
-setwd(
-  "~/Analysis and Modelling general/2011-2021 HLE by MSOA/Working files"
-)
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2/Working files")
 
 write_csv(
   msoa_lookup_final,
