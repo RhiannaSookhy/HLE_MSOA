@@ -1,16 +1,11 @@
 
 # ============================================================
 # MSOA HEALTHY LIFE EXPECTANCY 2011 -> 2021
-# HEALTH INEQUALITIES AND INCOME DEPRIVATION ANALYSIS
-
+# All Comparison HLE plots are here (although not methodologically sound due to ONS chnages)
 #
 # Date: 30/07/2026
 # ============================================================
 
-
-# ============================================================
-# 1. SET-UP
-# ============================================================
 
 rm(list = ls())
 
@@ -22,16 +17,10 @@ library(stringr)
 library(ggplot2)
 library(scales)
 
-
-setwd(
-  "~/Analysis and Modelling general/2011-2021 HLE by MSOA"
-)
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
 
-# ============================================================
-# 2. LOAD EXISTING 2011 HLE + IMD SKELETON
-# ============================================================
-
+#Load exisiting files
 msoa_data <- read_csv(
   "Working files/MSOA_2011_HLE_IMD.csv"
 )
@@ -41,9 +30,7 @@ msoa_data <- read_csv(
 glimpse(msoa_data)
 
 
-# ============================================================
-# 3. LOAD NEW 2021 HLE / LE DATA
-# ============================================================
+#New data
 
 lemsoa <- read_excel(
   "Raw data/hslemsoa.xlsx",
@@ -133,9 +120,7 @@ health_2021 <- le_2021 %>%
 
 
 
-# ============================================================
-# 6. CHECK 2021 HLE FILES BEFORE MERGING
-# ============================================================
+#checks
 
 
 # Check missing health measures
@@ -171,9 +156,7 @@ health_2021_wide <- health_2021 %>%
 
 #6856 MSOA's 
 
-# ============================================================
-# 7. MERGE 2021 HEALTH DATA ONTO THE 2011/2021 SKELETON
-# ============================================================
+#Merge
 
 msoa_data <- msoa_data %>%
   left_join(
@@ -190,9 +173,7 @@ msoa_data <- msoa_data %>%
 
 
 
-# ============================================================
-# 9. CHECK ALL REQUIRED VARIABLES FOR MISSING VALUES
-# ============================================================
+#Check key variables
 
 required_variables <- c(
   "MSOA21CD",
@@ -230,9 +211,7 @@ missing_summary <- msoa_data %>%
 missing_summary
 
 
-# ============================================================
-# 10. IDENTIFY ROWS WITH ANY REQUIRED MISSING DATA
-# ============================================================
+#Missing rows
 
 msoa_missing <- msoa_data %>%
   filter(
@@ -266,7 +245,7 @@ analysis_data <- msoa_data %>%
 
 
 # ============================================================
-# 13. CALCULATE INCOME DEPRIVATION PERCENTILES
+# CALCULATE INCOME DEPRIVATION PERCENTILES
 # ============================================================
 #
 # Higher income score = more deprived.
@@ -303,9 +282,7 @@ analysis_data <- analysis_data %>%
 #   )
 
 
-# ============================================================
-# 15. CALCULATE CHANGES IN HEALTH
-# ============================================================
+
 
 analysis_data <- analysis_data %>%
   mutate(
@@ -339,9 +316,7 @@ analysis_data <- analysis_data %>%
   )
 
 
-# ============================================================
-# 16. BASIC NATIONAL DESCRIPTIVES
-# ============================================================
+
 
 national_change_summary <- analysis_data %>%
   summarise(
@@ -388,9 +363,7 @@ national_change_summary <- analysis_data %>%
 national_change_summary
 
 
-# ============================================================
-# 17. REGIONAL CHANGE SUMMARY
-# ============================================================
+#Regional summary
 
 regional_change_summary <- analysis_data %>%
   group_by(Region) %>%
@@ -441,9 +414,7 @@ regional_change_summary <- analysis_data %>%
 regional_change_summary
 
 
-# ============================================================
-# 18. REGIONAL HLE CHANGE PLOT
-# ============================================================
+
 
 ggplot(
   regional_change_summary,
@@ -467,9 +438,7 @@ ggplot(
   theme_minimal()
 
 
-# ============================================================
-# 19. IDENTIFY LARGEST AND SMALLEST CHANGES
-# ============================================================
+#Small and large chnages
 
 largest_HLE_increases_M <- analysis_data %>%
   slice_max(
@@ -509,9 +478,7 @@ largest_HLE_increases_M
 smallest_HLE_changes_M
 
 
-# ============================================================
-# 20. MOST / LEAST CHANGE FOR ALL FOUR OUTCOMES
-# ============================================================
+
 
 change_rankings <- bind_rows(
   
@@ -615,10 +582,7 @@ change_rankings <- bind_rows(
 
 change_rankings
 
-
-# ============================================================
-#PREPARE LONG DATA FOR FOUR MARMOT FIGURES
-# ============================================================
+#Prep for plotting
 
 male_HLE_plot_data <- analysis_data %>%
   select(
@@ -668,9 +632,7 @@ female_LE_plot_data <- analysis_data %>%
   )
 
 
-# ============================================================
-# 22. FUNCTION FOR 2011 VS 2021 MARMOT PLOT
-# ============================================================
+#Plotting function
 
 marmot_2011_2021_plot <- function(
     data,
@@ -763,14 +725,7 @@ marmot_2011_2021_plot <- function(
 }
 
 
-# ============================================================
-# 23. FOUR MAIN FIGURES
-# ============================================================
-
-
-# -----------------------------
-# Male HLE
-# -----------------------------
+# plotting main figures
 
 male_HLE_2011_2021 <- marmot_2011_2021_plot(
   male_HLE_plot_data,
@@ -840,53 +795,41 @@ female_LE_2011_2021 <- marmot_2011_2021_plot(
 female_LE_2011_2021
 
 
-# ============================================================
-# 24. SAVE THE ANALYSIS DATASET
-# ============================================================
-
-write_csv(
-  analysis_data,
-  "MSOA_2011_2021_HLE_LE_IMD_analysis.csv"
-)
+#can save analysis data set
+# write_csv(
+#   analysis_data,
+#   "MSOA_2011_2021_HLE_LE_IMD_analysis.csv"
+# )
 
 
-# ============================================================
-# 25. SAVE SUMMARY TABLES
-# ============================================================
 
-write_csv(
-  regional_change_summary,
-  "regional_change_summary_2011_2021.csv"
-)
 
-write_csv(
-  national_change_summary,
-  "national_change_summary_2011_2021.csv"
-)
-
-write_csv(
-  change_rankings,
-  "MSOA_change_rankings_2011_2021.csv"
-)
-
-write_csv(
-  missing_summary,
-  "missing_data_summary_2011_2021.csv"
-)
+# write_csv(
+#   regional_change_summary,
+#   "regional_change_summary_2011_2021.csv"
+# )
+# 
+# write_csv(
+#   national_change_summary,
+#   "national_change_summary_2011_2021.csv"
+# )
+# 
+# write_csv(
+#   change_rankings,
+#   "MSOA_change_rankings_2011_2021.csv"
+# )
+# 
+# write_csv(
+#   missing_summary,
+#   "missing_data_summary_2011_2021.csv"
+# )
 
 
 
 
 #Sense checking
 
-# ============================================================
-# NATIONAL MSOA SENSE CHECK:
-# HLE AND LE BY YEAR AND DEPRIVATION GROUP
-# ============================================================
 
-# ------------------------------------------------------------
-# 1. OVERALL NATIONAL MSOA AVERAGES
-# ------------------------------------------------------------
 
 national_msoa_averages <- analysis_data %>%
   summarise(
@@ -1200,9 +1143,7 @@ regional_female_LE
 
 ###Pulling out LE comparisons ============================================
 
-# ============================================================
-# LARGEST INCREASES / DECREASES IN LIFE EXPECTANCY
-# ============================================================
+
 
 LE_change_rankings <- bind_rows(
   
@@ -1260,10 +1201,8 @@ LE_change_rankings
 
 
 
-# ============================================================
 # TOP 10% VS BOTTOM 10%
-# LIFE EXPECTANCY
-# ============================================================
+
 
 analysis_data <- analysis_data %>%
   mutate(
@@ -1341,7 +1280,7 @@ LE_gap_summary
 # INEQUALITY GAP OVER TIME
 # 2011 LE by 2015 deprivation
 # 2021 LE by 2025 deprivation
-# ============================================================
+
 
 # -----------------------------
 # 2011 GAP (using 2015 IMD)
@@ -1385,9 +1324,7 @@ LE_gap_2021 <- analysis_data %>%
   )
 
 
-# ============================================================
-# COMBINE RESULTS
-# ============================================================
+#Combine Results
 
 LE_gap_time <- LE_gap_2011 %>%
   rename(Group = deprivation_group_2015) %>%
@@ -1400,9 +1337,7 @@ LE_gap_time <- LE_gap_2011 %>%
 LE_gap_time
 
 
-# ============================================================
-# CALCULATE GAPS
-# ============================================================
+#Calculate gaps
 
 LE_gap_summary <- tibble(
   

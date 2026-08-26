@@ -951,20 +951,20 @@ imd_2015_final_lad <- imd_2015_results$lad %>%
 #setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA/Working files")
 setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2/Working files")
 
-write_csv(imd_2015_final_msoa,
-          "imd_2015_final_msoa.csv")
-
-write_csv(imd_2015_final_merged,
-          "imd_2015_final_merged.csv")
-
-write_csv(imd_2025_final_msoa,
-          "imd_2025_final_msoa.csv")
-
-write_csv(imd_2025_final_lad,
-          "imd_2025_final_lad.csv")
-
-write_csv(imd_2015_final_lad,
-          "imd_2015_final_lad.csv")
+# write_csv(imd_2015_final_msoa,
+#           "imd_2015_final_msoa.csv")
+# 
+# write_csv(imd_2015_final_merged,
+#           "imd_2015_final_merged.csv")
+# 
+# write_csv(imd_2025_final_msoa,
+#           "imd_2025_final_msoa.csv")
+# 
+# write_csv(imd_2025_final_lad,
+#           "imd_2025_final_lad.csv")
+# 
+# write_csv(imd_2015_final_lad,
+#           "imd_2015_final_lad.csv")
 
 
 

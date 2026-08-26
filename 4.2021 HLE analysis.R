@@ -12,13 +12,10 @@ library(janitor)
 library(ggplot2)
 library(tidyr)
 
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+#setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
-#Needs updating
-
-# ============================================================
-# 2. LOAD 2021 HLE / LE DATA
-# ============================================================
+#Load in data
 
 lemsoa <- read_excel(
   "Raw data/hslemsoa.xlsx",
@@ -32,10 +29,7 @@ hslemsoa <- read_excel(
   skip = 6
 )
 
-
-# ============================================================
-# 3. LOAD REGION DATA
-# ============================================================
+#Regional data
 
 MSOA_Region_2021 <- read_csv(
   "Raw data/MOSa_Region_2021.csv"
@@ -51,9 +45,7 @@ MSOA_Region_2021 <- read_csv(
   )
 
 
-# ============================================================
-# 4. PREPARE 2021 LIFE EXPECTANCY DATA
-# ============================================================
+#Clean
 
 le_2021 <- lemsoa %>%
   filter(
@@ -81,10 +73,6 @@ le_2021 <- lemsoa %>%
     LE_2021_UCI = UCI
   )
 
-
-# ============================================================
-# 5. PREPARE 2021 HEALTHY LIFE EXPECTANCY DATA
-# ============================================================
 
 hle_2021 <- hslemsoa %>%
   filter(
@@ -120,9 +108,7 @@ nrow(le_2021)
 nrow(hle_2021)
 
 
-# ============================================================
-# 6. CREATE HEALTH_2021 + REGION
-# ============================================================
+#COmbining
 
 health_2021 <- le_2021 %>%
   select(
@@ -347,20 +333,11 @@ HLE_by_sex_plot
 
 
 
-
-
+#Re doing above but by Sex on different plots
 
 library(dplyr)
 library(ggplot2)
 library(patchwork)
-
-# ============================================================
-# Function: scatter plot by sex and measure
-# Includes:
-#   - MSOA estimate points
-#   - LOESS curve for estimate
-#   - LOESS curves for lower and upper 95% CI
-# ============================================================
 
 marmot_plot_sex_measure <- function(data, measure_name, sex_name,
                                     title_text = NULL,
@@ -384,18 +361,14 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     )
   ) +
     
-    # --------------------------------------------------------
-  # MSOA estimate points
-  # --------------------------------------------------------
+
   geom_point(
     alpha = 0.25,
     size = 0.9,
     colour = "black"
   ) +
     
-    # --------------------------------------------------------
-  # LOESS curve for the actual estimate
-  # --------------------------------------------------------
+
   geom_smooth(
     aes(y = years),
     method = "loess",
@@ -405,9 +378,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     colour = "black"
   ) +
     
-    # --------------------------------------------------------
-  # Lower 95% CI LOESS curve
-  # --------------------------------------------------------
   geom_smooth(
     aes(
       y = lower,
@@ -419,10 +389,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     linetype = "dashed",
     linewidth = 1.3
   ) +
-    
-    # --------------------------------------------------------
-  # Upper 95% CI LOESS curve
-  # --------------------------------------------------------
+
   geom_smooth(
     aes(
       y = upper,
@@ -435,9 +402,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     linewidth = 1.3
   )
   
-  # ----------------------------------------------------------
-  # Optional: add lower and upper CI points
-  # ----------------------------------------------------------
   
   if (show_ci_points) {
     
@@ -461,9 +425,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
       )
   }
   
-  # ----------------------------------------------------------
-  # Formatting
-  # ----------------------------------------------------------
   
   p +
     scale_colour_manual(
@@ -489,9 +450,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
 }
 
 
-# ============================================================
-# 1. LIFE EXPECTANCY — MALE
-# ============================================================
+#LE - Male
 
 LE_male_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -502,9 +461,7 @@ LE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# 2. LIFE EXPECTANCY — FEMALE
-# ============================================================
+#LE Female
 
 LE_female_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -515,9 +472,7 @@ LE_female_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# 3. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
+# HLE Male
 
 HLE_male_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -528,9 +483,7 @@ HLE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# 4. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
+#HLE Female
 
 HLE_female_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -541,9 +494,7 @@ HLE_female_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# DISPLAY INDIVIDUAL PLOTS
-# ============================================================
+#Display
 
 LE_male_plot
 LE_female_plot
@@ -552,27 +503,7 @@ HLE_male_plot
 HLE_female_plot
 
 
-# ============================================================
-# DISPLAY ALL FOUR TOGETHER
-# ============================================================
-
-(LE_male_plot | LE_female_plot) /
-  (HLE_male_plot | HLE_female_plot)
-
-
-
-# ============================================================
-# PACKAGES
-# ============================================================
-
-library(dplyr)
-library(ggplot2)
-library(patchwork)
-
-
-# ============================================================
-# FUNCTION
-# ============================================================
+#Re do with CI points
 
 marmot_plot_sex_measure <- function(data, measure_name, sex_name,
                                     title_text = NULL) {
@@ -595,9 +526,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
   }
   
   
-  # ==========================================================
-  # PLOT
-  # ==========================================================
   
   ggplot(
     plot_data,
@@ -605,10 +533,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
       x = deprivation_percentile
     )
   ) +
-    
-    # --------------------------------------------------------
-  # Main MSOA estimate points
-  # --------------------------------------------------------
   
   geom_point(
     aes(
@@ -619,10 +543,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     size = 0.9
   ) +
     
-    
-    # --------------------------------------------------------
-  # Lower 95% CI points
-  # --------------------------------------------------------
   
   geom_point(
     aes(
@@ -633,10 +553,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     size = 0.8
   ) +
     
-    
-    # --------------------------------------------------------
-  # Upper 95% CI points
-  # --------------------------------------------------------
+
   
   geom_point(
     aes(
@@ -646,11 +563,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     alpha = 0.25,
     size = 0.8
   ) +
-    
-    
-    # --------------------------------------------------------
-  # LOESS curve for the main estimate
-  # --------------------------------------------------------
   
   geom_smooth(
     aes(
@@ -663,10 +575,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     linewidth = 1.3
   ) +
     
-    
-    # --------------------------------------------------------
-  # LOESS curve for lower 95% CI
-  # --------------------------------------------------------
+
   
   geom_smooth(
     aes(
@@ -680,10 +589,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     linewidth = 1.3
   ) +
     
-    
-    # --------------------------------------------------------
-  # LOESS curve for upper 95% CI
-  # --------------------------------------------------------
+
   
   geom_smooth(
     aes(
@@ -697,10 +603,6 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     linewidth = 1.3
   ) +
     
-    
-    # --------------------------------------------------------
-  # Colours
-  # --------------------------------------------------------
   
   scale_colour_manual(
     values = c(
@@ -709,20 +611,13 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     )
   ) +
     
-    
-    # --------------------------------------------------------
-  # X-axis
-  # --------------------------------------------------------
+
   
   scale_x_continuous(
     limits = c(1, 100),
     breaks = seq(0, 100, 10)
   ) +
-    
-    
-    # --------------------------------------------------------
-  # Labels
-  # --------------------------------------------------------
+
   
   labs(
     x = "Income deprivation percentile\n(1 = most deprived, 100 = least deprived)",
@@ -730,11 +625,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
     colour = "95% confidence interval",
     title = title_text
   ) +
-    
-    
-    # --------------------------------------------------------
-  # Theme
-  # --------------------------------------------------------
+
   
   theme_minimal() +
     
@@ -747,9 +638,7 @@ marmot_plot_sex_measure <- function(data, measure_name, sex_name,
 }
 
 
-# ============================================================
-# LIFE EXPECTANCY — MALE
-# ============================================================
+#LE male
 
 LE_male_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -759,9 +648,7 @@ LE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# LIFE EXPECTANCY — FEMALE
-# ============================================================
+#LE female
 
 LE_female_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -770,10 +657,7 @@ LE_female_plot <- marmot_plot_sex_measure(
   title_text = "Life expectancy by income deprivation - Female"
 )
 
-
-# ============================================================
-# HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
+#HLE male
 
 HLE_male_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -783,9 +667,7 @@ HLE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
+#HLE female
 
 HLE_female_plot <- marmot_plot_sex_measure(
   data = marmot_long,
@@ -795,9 +677,7 @@ HLE_female_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# VIEW INDIVIDUAL PLOTS
-# ============================================================
+#Display
 
 LE_male_plot
 
@@ -806,14 +686,6 @@ LE_female_plot
 HLE_male_plot
 
 HLE_female_plot
-
-
-# ============================================================
-# PUT ALL FOUR PLOTS TOGETHER
-# ============================================================
-
-(LE_male_plot | LE_female_plot) /
-  (HLE_male_plot | HLE_female_plot)
 
 
 
@@ -1063,11 +935,7 @@ ggplot(
 
 
 library(tidyverse)
-
-
-# ============================================================
-# Regional Marmot plot function
-# ============================================================
+#Regionally plottimg
 
 marmot_plot_by_region <- function(data,
                                   measure_name,
@@ -1126,9 +994,6 @@ marmot_plot_by_region <- function(data,
 }
 
 
-# ============================================================
-# Regional Life Expectancy
-# ============================================================
 
 regional_LE_plot <- marmot_plot_by_region(
   marmot_long,
@@ -1138,10 +1003,6 @@ regional_LE_plot <- marmot_plot_by_region(
 
 regional_LE_plot
 
-
-# ============================================================
-# Regional Healthy Life Expectancy
-# ============================================================
 
 regional_HLE_plot <- marmot_plot_by_region(
   marmot_long,
@@ -1158,9 +1019,6 @@ regional_HLE_plot
 
 library(tidyverse)
 
-# ============================================================
-# Regional Marmot plot function BY SEX
-# ============================================================
 
 marmot_plot_by_region_sex <- function(data,
                                       measure_name,
@@ -1185,18 +1043,12 @@ marmot_plot_by_region_sex <- function(data,
     )
   ) +
     
-    # --------------------------------------------------------
-  # MSOA points
-  # --------------------------------------------------------
   
   geom_point(
     alpha = 0.25,
     size = 0.85
   ) +
     
-    # --------------------------------------------------------
-  # Regional LOESS curves
-  # --------------------------------------------------------
   
   geom_smooth(
     aes(group = RGN22NM),
@@ -1206,19 +1058,13 @@ marmot_plot_by_region_sex <- function(data,
     linewidth = 1.2
   ) +
     
-    # --------------------------------------------------------
-  # X-axis
-  # --------------------------------------------------------
   
   scale_x_continuous(
     limits = c(1, 100),
     breaks = seq(0, 100, 10),
     expand = c(0, 0)
   ) +
-    
-    # --------------------------------------------------------
-  # Labels
-  # --------------------------------------------------------
+
   
   labs(
     x = "Income deprivation percentile\n(1 = most deprived, 100 = least deprived)",
@@ -1227,9 +1073,7 @@ marmot_plot_by_region_sex <- function(data,
     title = title_text
   ) +
     
-    # --------------------------------------------------------
-  # Theme
-  # --------------------------------------------------------
+
   
   theme_minimal(base_size = 13) +
     
@@ -1241,9 +1085,6 @@ marmot_plot_by_region_sex <- function(data,
 }
 
 
-# ============================================================
-# 1. LIFE EXPECTANCY — MALE
-# ============================================================
 
 regional_LE_male_plot <- marmot_plot_by_region_sex(
   marmot_long,
@@ -1253,9 +1094,6 @@ regional_LE_male_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 2. LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 regional_LE_female_plot <- marmot_plot_by_region_sex(
   marmot_long,
@@ -1265,9 +1103,6 @@ regional_LE_female_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 3. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 regional_HLE_male_plot <- marmot_plot_by_region_sex(
   marmot_long,
@@ -1277,9 +1112,6 @@ regional_HLE_male_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 4. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 regional_HLE_female_plot <- marmot_plot_by_region_sex(
   marmot_long,
@@ -1289,9 +1121,7 @@ regional_HLE_female_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# VIEW INDIVIDUAL PLOTS
-# ============================================================
+#Display
 
 regional_LE_male_plot
 
@@ -1302,11 +1132,8 @@ regional_HLE_male_plot
 regional_HLE_female_plot
 
 
-library(tidyverse)
-library(patchwork)
 
-
-# ============================================================
+#adding CI
 # Regional Marmot plot function
 
 
@@ -1331,10 +1158,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     aes(x = deprivation_percentile)
   ) +
     
-    # ========================================================
-  # MAIN ESTIMATE POINTS
-  # Dark regional colours
-  # ========================================================
+
   
   geom_point(
     aes(
@@ -1346,7 +1170,6 @@ marmot_plot_by_region_sex_ci <- function(data,
   ) +
     
     # ========================================================
-  # LOWER CI POINTS
   # Same colour as lower CI curves
   # ========================================================
   
@@ -1360,7 +1183,7 @@ marmot_plot_by_region_sex_ci <- function(data,
   # ) +
   #   
   #   # ========================================================
-  # # UPPER CI POINTS
+
   # # Same colour as upper CI curves
   # # ========================================================
   # 
@@ -1373,9 +1196,7 @@ marmot_plot_by_region_sex_ci <- function(data,
   #   size = 0.7
   # ) +
     
-    # ========================================================
-  # MAIN ESTIMATE — SOLID
-  # ========================================================
+
   
   geom_smooth(
     aes(
@@ -1390,9 +1211,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     linetype = "solid"
   ) +
     
-    # ========================================================
-  # LOWER CI — DASHED
-  # ========================================================
+
   
   geom_smooth(
     aes(
@@ -1407,9 +1226,6 @@ marmot_plot_by_region_sex_ci <- function(data,
     linetype = "dashed"
   ) +
     
-    # ========================================================
-  # UPPER CI — DASHED
-  # ========================================================
   
   geom_smooth(
     aes(
@@ -1424,12 +1240,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     linetype = "dashed"
   ) +
     
-    # ========================================================
-  # COLOUR PALETTE
-  #
-  # Dark = estimates
-  # Light = corresponding CI
-  # ========================================================
+
   
   scale_colour_manual(
     values = c(
@@ -1445,9 +1256,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     )
   ) +
     
-    # ========================================================
-  # X AXIS
-  # ========================================================
+
   
   scale_x_continuous(
     limits = c(1, 100),
@@ -1455,9 +1264,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     expand = c(0, 0)
   ) +
     
-    # ========================================================
-  # LABELS
-  # ========================================================
+
   
   labs(
     x = "Income deprivation percentile\n(1 = most deprived, 100 = least deprived)",
@@ -1466,9 +1273,7 @@ marmot_plot_by_region_sex_ci <- function(data,
     title = title_text
   ) +
     
-    # ========================================================
-  # THEME
-  # ========================================================
+
   
   theme_minimal(base_size = 13) +
     
@@ -1478,9 +1283,8 @@ marmot_plot_by_region_sex_ci <- function(data,
       legend.position = "right"
     )
 }    
-# ============================================================
-# SELECT LONDON AND NORTH EAST
-# ============================================================
+
+#Edit for comparison choices
 
 london_northeast <- marmot_long %>%
   filter(
@@ -1491,9 +1295,7 @@ london_northeast <- marmot_long %>%
   )
 
 
-# ============================================================
-# 1. LIFE EXPECTANCY — MALE
-# ============================================================
+
 
 LE_london_northeast_male <- marmot_plot_by_region_sex_ci(
   london_northeast,
@@ -1503,10 +1305,6 @@ LE_london_northeast_male <- marmot_plot_by_region_sex_ci(
 )
 
 
-# ============================================================
-# 2. LIFE EXPECTANCY — FEMALE
-# ============================================================
-
 LE_london_northeast_female <- marmot_plot_by_region_sex_ci(
   london_northeast,
   "Life expectancy",
@@ -1515,9 +1313,6 @@ LE_london_northeast_female <- marmot_plot_by_region_sex_ci(
 )
 
 
-# ============================================================
-# 3. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 HLE_london_northeast_male <- marmot_plot_by_region_sex_ci(
   london_northeast,
@@ -1527,10 +1322,6 @@ HLE_london_northeast_male <- marmot_plot_by_region_sex_ci(
 )
 
 
-# ============================================================
-# 4. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
-
 HLE_london_northeast_female <- marmot_plot_by_region_sex_ci(
   london_northeast,
   "Healthy life expectancy",
@@ -1539,9 +1330,7 @@ HLE_london_northeast_female <- marmot_plot_by_region_sex_ci(
 )
 
 
-# ============================================================
-# VIEW INDIVIDUAL PLOTS
-# ============================================================
+#Display
 
 LE_london_northeast_male
 
@@ -1552,9 +1341,7 @@ HLE_london_northeast_male
 HLE_london_northeast_female
 
 
-# ============================================================
-# FOUR-PLOT 2 x 2 LAYOUT
-# ============================================================
+# 4 by 4 layout
 
 (
   LE_london_northeast_male |
@@ -1570,9 +1357,7 @@ HLE_london_northeast_female
 
 
 
-# ============================================================
-# Regional summary statistics
-# ============================================================
+#Regional stats
 
 regional_summary <- marmot_long %>%
   group_by(
@@ -1591,10 +1376,6 @@ regional_summary <- marmot_long %>%
 regional_summary
 
 
-
-# ============================================================
-# Regional deprivation gap
-# ============================================================
 
 regional_gap <- marmot_long %>%
   
@@ -1636,17 +1417,11 @@ regional_gap
 
 ##Confidence intervals ................Of England only 
 
-# ============================================================
-# CONFIDENCE INTERVAL WIDTH ANALYSIS
-# Separate results for:
-#   1. Life expectancy
-#   2. Healthy life expectancy
-# ============================================================
 
 library(dplyr)
 library(tidyr)
 
-# ------------------------------------------------------------
+#Calc width
 # 1. Calculate CI width
 # ------------------------------------------------------------
 
@@ -1656,10 +1431,7 @@ marmot_long <- marmot_long %>%
   )
 
 
-# ============================================================
-# 2. SUMMARY BY SEX AND MEASURE
-#    Mean, minimum and maximum CI width
-# ============================================================
+
 
 # Life expectancy
 ci_summary_LE <- marmot_long %>%
@@ -1774,9 +1546,8 @@ ci_bands_HLE <- marmot_long_bands %>%
 
 
 # ============================================================
-# 4. TOP 20 WIDEST CIs
-#    Separate top 20 for LE and HLE
-# ============================================================
+# TOP 20 WIDEST CIs
+
 
 # ------------------------------------------------------------
 # Life expectancy - top 20
@@ -1820,20 +1591,10 @@ top_20_ci_HLE <- marmot_long %>%
   slice_head(n = 20)
 
 
-# ============================================================
-# 5. CI WIDTH BY REGION
-#    Separate for LE and HLE
-#
-#    Gives:
-#       n
-#       mean CI width
-#       minimum CI width
-#       maximum CI width
-# ============================================================
+#  WIDTH BY REGION
 
-# ------------------------------------------------------------
+
 # Life expectancy - regional CI width
-# ------------------------------------------------------------
 
 ci_width_region_LE <- marmot_long %>%
   filter(measure == "Life expectancy") %>%
@@ -1847,10 +1608,8 @@ ci_width_region_LE <- marmot_long %>%
   ) %>%
   arrange(desc(mean_ci_width))
 
-
-# ------------------------------------------------------------
 # Healthy life expectancy - regional CI width
-# ------------------------------------------------------------
+
 
 ci_width_region_HLE <- marmot_long %>%
   filter(measure == "Healthy life expectancy") %>%
@@ -1865,11 +1624,7 @@ ci_width_region_HLE <- marmot_long %>%
   arrange(desc(mean_ci_width))
 
 
-# ============================================================
-# 6. OPTIONAL: REGIONAL SUMMARY WITHOUT SEX
-#    If you also want one overall regional figure for each
-#    measure, ignoring sex.
-# ============================================================
+
 
 # Life expectancy
 ci_width_region_LE_overall <- marmot_long %>%
@@ -1898,10 +1653,7 @@ ci_width_region_HLE_overall <- marmot_long %>%
   ) %>%
   arrange(desc(mean_ci_width))
 
-
-# ============================================================
-# 7. VIEW THE RESULTS
-# ============================================================
+#view
 
 # Mean / min / max
 ci_summary_LE
@@ -1927,15 +1679,15 @@ ci_width_region_HLE_overall
 
 
 
+
+
+#Making admendments
+
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-# ============================================================
-# 1. Create MSOA-level deprivation percentile
-#    This gives each MSOA ONE deprivation percentile,
-#    regardless of sex.
-# ============================================================
 
 msoa_deprivation <- marmot_data %>%
   select(
@@ -1951,9 +1703,7 @@ msoa_deprivation <- marmot_data %>%
   )
 
 
-# ============================================================
-# 2. Add deprivation percentile to marmot_long
-# ============================================================
+
 
 marmot_long_plot <- marmot_long %>%
   select(
@@ -1978,10 +1728,6 @@ marmot_long_plot <- marmot_long %>%
     ci_width = upper - lower
   )
 
-
-# ============================================================
-# 3. LIFE EXPECTANCY
-# ============================================================
 
 plot_LE <- marmot_long_plot %>%
   filter(measure == "Life expectancy") %>%
@@ -2027,9 +1773,6 @@ plot_LE <- marmot_long_plot %>%
 plot_LE
 
 
-# ============================================================
-# 4. HEALTHY LIFE EXPECTANCY
-# ============================================================
 
 plot_HLE <- marmot_long_plot %>%
   filter(measure == "Healthy life expectancy") %>%
@@ -2077,13 +1820,13 @@ plot_HLE
 
 
 
+#CI simulations =========================================================
+
 library(tidyverse)
 library(future)
 library(future.apply)
 
-# ============================================================
-# 1. Set up parallel processing
-# ============================================================
+
 
 cores <- parallel::detectCores() - 1
 
@@ -2093,9 +1836,6 @@ plan(
 )
 
 
-# ============================================================
-# 2. Select the data
-# ============================================================
 
 simulation_data <- marmot_long %>%
   filter(
@@ -2105,25 +1845,18 @@ simulation_data <- marmot_long %>%
   arrange(deprivation_percentile)
 
 
-# ============================================================
-# 3. Number of simulations
-# ============================================================
+# N of simulations
+
 
 n_sim <- 20000
 
-
-# ============================================================
-# 4. Prediction grid
-# ============================================================
 
 prediction_grid <- data.frame(
   deprivation_percentile = seq(1, 100, length.out = 100)
 )
 
 
-# ============================================================
-# 5. Parallel Monte Carlo simulations
-# ============================================================
+#Rune paralell monet carlo Simulations
 
 set.seed(123)
 
@@ -2167,16 +1900,11 @@ all_curves <- future_lapply(
 )
 
 
-# ============================================================
-# 6. Combine simulations
-# ============================================================
 
 all_curves <- bind_rows(all_curves)
 
 
-# ============================================================
-# 7. Plot all curves
-# ============================================================
+#Plotting curves
 
 ggplot(
   all_curves,
@@ -2210,9 +1938,6 @@ ggplot(
   )
 
 
-# ============================================================
-# 8. Shut down parallel workers when finished
-# ============================================================
 
 plan(sequential)
 
@@ -2402,7 +2127,7 @@ ggplot(
 
 
 
-#New analysis based on 4/8/26
+#New analysis based on 4/8/26===========================================================
 
 library(dplyr)
 
@@ -2509,9 +2234,7 @@ HLE_london_northeast
 library(dplyr)
 library(ggplot2)
 
-#---------------------------------------------------------
-# 1. Create deprivation percentile within each region
-#---------------------------------------------------------
+
 
 marmot_data <- marmot_data %>%
   group_by(RGN22NM) %>%
@@ -2521,18 +2244,14 @@ marmot_data <- marmot_data %>%
   ) %>%
   ungroup()
 
-#---------------------------------------------------------
-# 2. Keep London and North East
-#---------------------------------------------------------
+
 
 london_northeast <- marmot_data %>%
   filter(
     RGN22NM %in% c("London", "North East")
   )
 
-#---------------------------------------------------------
-# 3. Generic plotting function
-#---------------------------------------------------------
+
 
 marmot_plot_by_region <- function(data,
                                   estimate,
@@ -2608,9 +2327,8 @@ marmot_plot_by_region <- function(data,
     )
 }
 
-#---------------------------------------------------------
-# 4. Life expectancy
-#---------------------------------------------------------
+
+
 
 LE_london_northeast <-
   marmot_plot_by_region(
@@ -2623,9 +2341,7 @@ LE_london_northeast <-
 
 LE_london_northeast
 
-#---------------------------------------------------------
-# 5. Healthy life expectancy
-#---------------------------------------------------------
+
 
 HLE_london_northeast <-
   marmot_plot_by_region(
@@ -2645,9 +2361,7 @@ HLE_london_northeast
 library(dplyr)
 library(ggplot2)
 
-# ============================================================
-# 1. CREATE REGIONAL IMD DEPRIVATION PERCENTILE
-# ============================================================
+
 
 marmot_data <- marmot_data %>%
   group_by(RGN22NM) %>%
@@ -2658,9 +2372,6 @@ marmot_data <- marmot_data %>%
   ungroup()
 
 
-# ============================================================
-# 2. SELECT LONDON AND NORTH EAST
-# ============================================================
 
 london_northeast <- marmot_data %>%
   filter(
@@ -2671,17 +2382,7 @@ london_northeast <- marmot_data %>%
   )
 
 
-# ============================================================
-# 3. FUNCTION TO PLOT BY REGION AND SEX
-# ============================================================
 
-library(dplyr)
-library(ggplot2)
-
-
-# ============================================================
-# 1. CREATE REGIONAL IMD DEPRIVATION PERCENTILE
-# ============================================================
 
 marmot_data <- marmot_data %>%
   group_by(RGN22NM) %>%
@@ -2692,9 +2393,7 @@ marmot_data <- marmot_data %>%
   ungroup()
 
 
-# ============================================================
-# 2. SELECT LONDON AND NORTH EAST
-# ============================================================
+
 
 london_northeast <- marmot_data %>%
   filter(
@@ -2705,10 +2404,7 @@ london_northeast <- marmot_data %>%
   )
 
 
-# ============================================================
-# 3. FUNCTION TO PLOT ESTIMATE + PUBLISHED CI
-#    BY REGION AND SEX
-# ============================================================
+
 
 marmot_plot_by_region_sex_ci <- function(
     data,
@@ -2723,9 +2419,7 @@ marmot_plot_by_region_sex_ci <- function(
   lower <- rlang::ensym(lower)
   upper <- rlang::ensym(upper)
   
-  # ----------------------------------------------------------
-  # Filter for sex and remove missing values
-  # ----------------------------------------------------------
+
   
   plot_data <- data %>%
     filter(
@@ -2737,18 +2431,14 @@ marmot_plot_by_region_sex_ci <- function(
       !is.na(!!upper)
     )
   
-  # ----------------------------------------------------------
-  # Plot
-  # ----------------------------------------------------------
+
   
   ggplot(
     plot_data,
     aes(x = regional_deprivation_percentile)
   ) +
     
-    # ========================================================
-  # MAIN ESTIMATE POINTS
-  # ========================================================
+
   
   geom_point(
     aes(
@@ -2759,9 +2449,7 @@ marmot_plot_by_region_sex_ci <- function(
     size = 0.8
   ) +
     
-    # ========================================================
-  # MAIN ESTIMATE — SOLID
-  # ========================================================
+
   
   geom_smooth(
     aes(
@@ -2776,9 +2464,7 @@ marmot_plot_by_region_sex_ci <- function(
     linetype = "solid"
   ) +
     
-    # ========================================================
-  # LOWER CI — DASHED
-  # ========================================================
+
   
   geom_smooth(
     aes(
@@ -2793,9 +2479,7 @@ marmot_plot_by_region_sex_ci <- function(
     linetype = "dashed"
   ) +
     
-    # ========================================================
-  # UPPER CI — DASHED
-  # ========================================================
+
   
   geom_smooth(
     aes(
@@ -2810,9 +2494,7 @@ marmot_plot_by_region_sex_ci <- function(
     linetype = "dashed"
   ) +
     
-    # ========================================================
-  # COLOUR PALETTE
-  # ========================================================
+
   
   scale_colour_manual(
     values = c(
@@ -2821,9 +2503,7 @@ marmot_plot_by_region_sex_ci <- function(
     )
   ) +
     
-    # ========================================================
-  # X AXIS
-  # ========================================================
+
   
   scale_x_continuous(
     limits = c(1, 100),
@@ -2831,9 +2511,7 @@ marmot_plot_by_region_sex_ci <- function(
     expand = c(0, 0)
   ) +
     
-    # ========================================================
-  # LABELS
-  # ========================================================
+
   
   labs(
     x = paste0(
@@ -2845,9 +2523,7 @@ marmot_plot_by_region_sex_ci <- function(
     title = title_text
   ) +
     
-    # ========================================================
-  # THEME
-  # ========================================================
+
   
   theme_minimal(base_size = 13) +
     theme(
@@ -2858,9 +2534,7 @@ marmot_plot_by_region_sex_ci <- function(
 }
 
 
-# ============================================================
-# 4. LIFE EXPECTANCY — MALE
-# ============================================================
+
 
 LE_london_northeast_male <-
   marmot_plot_by_region_sex_ci(
@@ -2875,9 +2549,7 @@ LE_london_northeast_male <-
 LE_london_northeast_male
 
 
-# ============================================================
-# 5. LIFE EXPECTANCY — FEMALE
-# ============================================================
+
 
 LE_london_northeast_female <-
   marmot_plot_by_region_sex_ci(
@@ -2892,9 +2564,6 @@ LE_london_northeast_female <-
 LE_london_northeast_female
 
 
-# ============================================================
-# 6. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 HLE_london_northeast_male <-
   marmot_plot_by_region_sex_ci(
@@ -2909,9 +2578,6 @@ HLE_london_northeast_male <-
 HLE_london_northeast_male
 
 
-# ============================================================
-# 7. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 HLE_london_northeast_female <-
   marmot_plot_by_region_sex_ci(

@@ -1,5 +1,5 @@
 
-
+#Using income data
 
 rm(list = ls())
 
@@ -10,13 +10,9 @@ library(janitor)
 library(ggplot2)
 library(tidyr)
 
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
-#Needs updating
 
-# ============================================================
-# 2. LOAD 2021 HLE / LE DATA
-# ============================================================
 
 lemsoa <- read_excel(
   "Raw data/hslemsoa.xlsx",
@@ -31,9 +27,6 @@ hslemsoa <- read_excel(
 )
 
 
-# ============================================================
-# 3. LOAD REGION DATA
-# ============================================================
 
 MSOA_Region_2021 <- read_csv(
   "Raw data/MOSa_Region_2021.csv"
@@ -49,9 +42,6 @@ MSOA_Region_2021 <- read_csv(
   )
 
 
-# ============================================================
-# 4. PREPARE 2021 LIFE EXPECTANCY DATA
-# ============================================================
 
 le_2021 <- lemsoa %>%
   filter(
@@ -80,9 +70,6 @@ le_2021 <- lemsoa %>%
   )
 
 
-# ============================================================
-# 5. PREPARE 2021 HEALTHY LIFE EXPECTANCY DATA
-# ============================================================
 
 hle_2021 <- hslemsoa %>%
   filter(
@@ -118,9 +105,6 @@ nrow(le_2021)
 nrow(hle_2021)
 
 
-# ============================================================
-# 6. CREATE HEALTH_2021 + REGION
-# ============================================================
 
 health_2021 <- le_2021 %>%
   select(
@@ -153,7 +137,7 @@ health_2021 <- le_2021 %>%
 
 
 
-##import income data
+##import income data (Will average 3 most recent years)
 library(readxl)
 
 msoa_income_2023 <- read_excel("Raw data/msoa_income_estimate_2023.xlsx", 
@@ -440,9 +424,7 @@ HLE_income_plot <- plot_income_curve(
 LE_income_plot
 HLE_income_plot
 
-# ============================================================
-# CREATE INCOME PERCENTILES (1 = lowest income, 100 = highest)
-# ============================================================
+#Create income percentiles
 
 # Create MSOA-level income percentile
 
@@ -491,9 +473,7 @@ income_percentile_data <- health_2021 %>%
     by = "MSOA21CD"
   )
 
-# ============================================================
-# PERCENTILE PLOT FUNCTION
-# ============================================================
+#Plotting function
 
 plot_income_percentile <- function(data, outcome, y_label, title_text) {
   
@@ -561,9 +541,6 @@ marmot_plot_sex_measure <- function(data,
                                     sex_name,
                                     title_text = NULL) {
   
-  # ----------------------------------------------------------
-  # Select the appropriate variables
-  # ----------------------------------------------------------
   
   if (measure_name == "Life expectancy") {
     
@@ -585,9 +562,6 @@ marmot_plot_sex_measure <- function(data,
   }
   
   
-  # ----------------------------------------------------------
-  # Filter to sex
-  # ----------------------------------------------------------
   
   plot_data <- data %>%
     filter(
@@ -599,18 +573,13 @@ marmot_plot_sex_measure <- function(data,
     )
   
   
-  # ----------------------------------------------------------
-  # Default title
-  # ----------------------------------------------------------
+
   
   if (is.null(title_text)) {
     title_text <- paste(measure_name, "-", sex_name)
   }
   
-  
-  # ----------------------------------------------------------
-  # Base plot
-  # ----------------------------------------------------------
+
   
   p <- ggplot(
     plot_data,
@@ -619,21 +588,14 @@ marmot_plot_sex_measure <- function(data,
       y = .data[[estimate_var]]
     )
   ) +
-    
-    # --------------------------------------------------------
-  # Individual MSOA estimates
-  # --------------------------------------------------------
-  
+
   geom_point(
     alpha = 0.25,
     size = 0.9,
     colour = "black"
   ) +
     
-    
-    # --------------------------------------------------------
-  # Main estimate LOESS
-  # --------------------------------------------------------
+
   
   geom_smooth(
     aes(
@@ -645,11 +607,7 @@ marmot_plot_sex_measure <- function(data,
     linewidth = 1.3,
     colour = "black"
   ) +
-    
-    
-    # --------------------------------------------------------
-  # Lower CI LOESS
-  # --------------------------------------------------------
+
   
   geom_smooth(
     aes(
@@ -663,10 +621,7 @@ marmot_plot_sex_measure <- function(data,
     linewidth = 1.1
   ) +
     
-    
-    # --------------------------------------------------------
-  # Upper CI LOESS
-  # --------------------------------------------------------
+
   
   geom_smooth(
     aes(
@@ -680,10 +635,7 @@ marmot_plot_sex_measure <- function(data,
     linewidth = 1.1
   ) +
     
-    
-    # --------------------------------------------------------
-  # Colours
-  # --------------------------------------------------------
+
   
   scale_colour_manual(
     values = c(
@@ -692,10 +644,7 @@ marmot_plot_sex_measure <- function(data,
     )
   ) +
     
-    
-    # --------------------------------------------------------
-  # Continuous percentile axis
-  # --------------------------------------------------------
+
   
   scale_x_continuous(
     limits = c(1, 100),
@@ -703,10 +652,7 @@ marmot_plot_sex_measure <- function(data,
     minor_breaks = seq(1, 100, 1)
   ) +
     
-    
-    # --------------------------------------------------------
-  # Labels
-  # --------------------------------------------------------
+
   
   labs(
     x = "Income percentile\n(1 = lowest income, 100 = highest income)",
@@ -722,9 +668,7 @@ marmot_plot_sex_measure <- function(data,
   return(p)
 }
 
-# ============================================================
-# LIFE EXPECTANCY — MALE
-# ============================================================
+
 
 LE_male_plot <- marmot_plot_sex_measure(
   data = income_percentile_data,
@@ -734,10 +678,6 @@ LE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# LIFE EXPECTANCY — FEMALE
-# ============================================================
-
 LE_female_plot <- marmot_plot_sex_measure(
   data = income_percentile_data,
   measure_name = "Life expectancy",
@@ -746,9 +686,7 @@ LE_female_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
+
 
 HLE_male_plot <- marmot_plot_sex_measure(
   data = income_percentile_data,
@@ -758,9 +696,7 @@ HLE_male_plot <- marmot_plot_sex_measure(
 )
 
 
-# ============================================================
-# HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
+
 
 HLE_female_plot <- marmot_plot_sex_measure(
   data = income_percentile_data,
@@ -784,9 +720,9 @@ HLE_female_plot
 
 library(tidyverse)
 
-# ============================================================
+
 # Regional Marmot plot function BY SEX
-# ============================================================
+
 
 marmot_plot_by_region_sex <- function(data,
                                       measure_name,
@@ -898,9 +834,6 @@ marmot_plot_by_region_sex <- function(data,
 }
 
 
-# ============================================================
-# 1. LIFE EXPECTANCY — MALE
-# ============================================================
 
 regional_LE_male_plot <- marmot_plot_by_region_sex(
   income_percentile_data,
@@ -910,9 +843,6 @@ regional_LE_male_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 2. LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 regional_LE_female_plot <- marmot_plot_by_region_sex(
   income_percentile_data,
@@ -922,9 +852,6 @@ regional_LE_female_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 3. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 regional_HLE_male_plot <- marmot_plot_by_region_sex(
   income_percentile_data,
@@ -934,9 +861,7 @@ regional_HLE_male_plot <- marmot_plot_by_region_sex(
 )
 
 
-# ============================================================
-# 4. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
+
 
 regional_HLE_female_plot <- marmot_plot_by_region_sex(
   income_percentile_data,
@@ -945,10 +870,7 @@ regional_HLE_female_plot <- marmot_plot_by_region_sex(
   "Healthy life expectancy by income percentile and region - Female"
 )
 
-
-# ============================================================
-# VIEW INDIVIDUAL PLOTS
-# ============================================================
+#Display
 
 regional_LE_male_plot
 
@@ -959,7 +881,7 @@ regional_HLE_male_plot
 regional_HLE_female_plot
 
 
-# By regionla income estimate percentiles
+# By regional income estimate percentiles
 
 library(tidyverse)
 
@@ -1031,7 +953,7 @@ regional_percentile_data <- health_2021 %>%
 
 # ============================================================
 # REGIONAL MARMOT PLOT FUNCTION BY SEX
-# ============================================================
+
 
 marmot_plot_regional_percentile <- function(data,
                                             measure_name,
@@ -1610,9 +1532,8 @@ HLE_SE_NE_female_regional
 
 
 
-# ============================================================
 # CREATE MSOA LEVEL DATASET WITH INCOME, LE, HLE AND REGION
-# ============================================================
+
 
 health_income <- health_2021 %>%
   left_join(
@@ -1632,8 +1553,7 @@ health_income <- health_2021 %>%
 
 
 # ============================================================
-# CREATE MSOA AVERAGE (COMBINE MALE + FEMALE)
-# ============================================================
+# CREATE MSOA AVERAGE 
 
 health_income_msoa <- health_income %>%
   select(
@@ -1650,7 +1570,7 @@ health_income_msoa <- health_income %>%
 
 # ============================================================
 # RAW INCOME VS HEALTH PLOTS (BEFORE PERCENTILES)
-# ============================================================
+
 
 # Plotting function
 
@@ -1686,9 +1606,7 @@ plot_raw_income <- function(data, outcome, y_label, title_text) {
 }
 
 
-# ============================================================
-# RAW NATIONAL CURVES
-# ============================================================
+
 
 LE_income_raw_plot <- plot_raw_income(
   health_income_msoa,
@@ -1709,9 +1627,7 @@ HLE_income_raw_plot <- plot_raw_income(
 LE_income_raw_plot
 HLE_income_raw_plot
 
-# ============================================================
-# RAW REGIONAL CURVES
-# ============================================================
+#Raw curves
 
 health_income_region_raw <- health_income_msoa %>%
   filter(
@@ -1775,11 +1691,10 @@ HLE_income_raw_region_plot <- plot_raw_income_region(
 LE_income_raw_region_plot
 HLE_income_raw_region_plot
 
-# ============================================================
 # NATIONAL INCOME PERCENTILE
 # 1 = lowest income MSOA
 # 100 = highest income MSOA
-# ============================================================
+
 
 health_income_msoa <- health_income_msoa %>%
   arrange(income_2023) %>%
@@ -1789,11 +1704,11 @@ health_income_msoa <- health_income_msoa %>%
   )
 
 
-# ============================================================
+
 # REGIONAL INCOME PERCENTILE
 # 1 = lowest income in region
 # 100 = highest income in region
-# ============================================================
+
 
 health_income_msoa <- health_income_msoa %>%
   group_by(RGN22NM) %>%

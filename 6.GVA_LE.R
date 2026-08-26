@@ -12,13 +12,10 @@ library(janitor)
 library(ggplot2)
 library(tidyr)
 
-setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+# setwd("~/Analysis and Modelling general/2011-2021 HLE by MSOA")
+setwd("C:/Users/rhianna.sookhy/OneDrive - The Health Foundation/Shortcuts/Analysis - 11-CAT/1. Work programme/Healthy Life Expectancy - strategy launch/Phase 2")
 
-#Needs updating
-
-# ============================================================
-# 2. LOAD 2021 HLE / LE DATA
-# ============================================================
+#Load new data
 
 lemsoa <- read_excel(
   "Raw data/hslemsoa.xlsx",
@@ -33,9 +30,6 @@ hslemsoa <- read_excel(
 )
 
 
-# ============================================================
-# 3. LOAD REGION DATA
-# ============================================================
 
 MSOA_Region_2021 <- read_csv(
   "Raw data/MOSa_Region_2021.csv"
@@ -51,9 +45,7 @@ MSOA_Region_2021 <- read_csv(
   )
 
 
-# ============================================================
-# 4. PREPARE 2021 LIFE EXPECTANCY DATA
-# ============================================================
+
 
 le_2021 <- lemsoa %>%
   filter(
@@ -82,9 +74,6 @@ le_2021 <- lemsoa %>%
   )
 
 
-# ============================================================
-# 5. PREPARE 2021 HEALTHY LIFE EXPECTANCY DATA
-# ============================================================
 
 hle_2021 <- hslemsoa %>%
   filter(
@@ -119,10 +108,6 @@ hle_2021 <- hslemsoa %>%
 nrow(le_2021)
 nrow(hle_2021)
 
-
-# ============================================================
-# 6. CREATE HEALTH_2021 + REGION
-# ============================================================
 
 health_2021 <- le_2021 %>%
   select(
@@ -679,9 +664,7 @@ library(dplyr)
 library(ggplot2)
 library(rlang)
 
-#----------------------------------------------------------
-# 1. Filter London and North East
-#----------------------------------------------------------
+
 
 london_northeast_gva <- health_2021 %>%
   filter(
@@ -689,9 +672,6 @@ london_northeast_gva <- health_2021 %>%
   )
 
 
-#----------------------------------------------------------
-# 2. Function to plot smoothed estimate + published CI
-#----------------------------------------------------------
 
 gva_region_plot <- function(data,
                             estimate,
@@ -1110,12 +1090,9 @@ HLE_GVA_growth <- gva_change_plot(
 HLE_GVA_growth
 
 
-# ============================================================
+
 # National percentile of GVA growth
-# ============================================================
-# ============================================================
-# 1. Create GVA growth 2009-13 to 2019-23
-# ============================================================
+
 
 health_2021 <- health_2021 %>%
   mutate(
@@ -1698,12 +1675,8 @@ LE_change_F_plot
 # 2021 HEALTH OUTCOMES
 # ============================================================
 
-library(tidyverse)
 
 
-# ============================================================
-# 1. CREATE CURRENT OUTCOME DATA
-# ============================================================
 
 analysis_data_gva <- analysis_data %>%
   mutate(
@@ -1719,9 +1692,7 @@ analysis_data_gva <- analysis_data %>%
   )
 
 
-# ============================================================
-# 2. REMOVE MISSING GVA / HEALTH VALUES
-# ============================================================
+
 
 analysis_data_gva <- analysis_data_gva %>%
   filter(
@@ -1729,9 +1700,7 @@ analysis_data_gva <- analysis_data_gva %>%
   )
 
 
-# ============================================================
-# 3. OPTIONAL: REMOVE EXTREME GVA OUTLIERS
-# ============================================================
+#Remove outliers
 
 Q1 <- quantile(
   analysis_data_gva$GVA_change_2009_13_to_2019_23,
@@ -1824,9 +1793,6 @@ plot_gva_vs_current <- function(
 }
 
 
-# ============================================================
-# 5. CURRENT LIFE EXPECTANCY — MALE
-# ============================================================
 
 LE_current_M_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -1837,9 +1803,7 @@ LE_current_M_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 6. CURRENT LIFE EXPECTANCY — FEMALE
-# ============================================================
+
 
 LE_current_F_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -1850,9 +1814,6 @@ LE_current_F_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 7. CURRENT HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 HLE_current_M_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -1863,9 +1824,6 @@ HLE_current_M_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 8. CURRENT HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 HLE_current_F_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -1876,9 +1834,7 @@ HLE_current_F_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 9. DISPLAY
-# ============================================================
+#Display
 
 LE_current_M_plot
 LE_current_F_plot
@@ -1895,14 +1851,11 @@ HLE_current_F_plot
 # ============================================================
 # GVA GROWTH VS CURRENT LE / HLE
 # EXCLUDING LONDON
-# ============================================================
-
-library(tidyverse)
 
 
-# ============================================================
-# 1. EXCLUDE LONDON
-# ============================================================
+
+# EXCLUDE LONDON
+
 
 analysis_data_gva <- analysis_data %>%
   filter(
@@ -1922,10 +1875,9 @@ analysis_data_gva <- analysis_data %>%
   )
 
 
-# ============================================================
-# 2. REMOVE EXTREME GVA OUTLIERS
-#    (calculated AFTER excluding London)
-# ============================================================
+
+# REMOVE EXTREME GVA OUTLIERS
+
 
 Q1 <- quantile(
   analysis_data_gva$GVA_change_2009_13_to_2019_23,
@@ -1952,9 +1904,7 @@ analysis_data_gva_plot <- analysis_data_gva %>%
   )
 
 
-# ============================================================
-# 3. GENERAL PLOT FUNCTION
-# ============================================================
+#Create plotting function
 
 plot_gva_vs_current <- function(
     data,
@@ -2017,9 +1967,6 @@ plot_gva_vs_current <- function(
 }
 
 
-# ============================================================
-# 4. LIFE EXPECTANCY — MALE
-# ============================================================
 
 LE_current_M_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -2029,9 +1976,6 @@ LE_current_M_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 5. LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 LE_current_F_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -2041,9 +1985,6 @@ LE_current_F_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 6. HEALTHY LIFE EXPECTANCY — MALE
-# ============================================================
 
 HLE_current_M_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -2053,9 +1994,6 @@ HLE_current_M_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 7. HEALTHY LIFE EXPECTANCY — FEMALE
-# ============================================================
 
 HLE_current_F_plot <- plot_gva_vs_current(
   data = analysis_data_gva_plot,
@@ -2065,9 +2003,7 @@ HLE_current_F_plot <- plot_gva_vs_current(
 )
 
 
-# ============================================================
-# 8. DISPLAY
-# ============================================================
+#Displaying
 
 LE_current_M_plot
 LE_current_F_plot
@@ -2080,12 +2016,7 @@ HLE_current_F_plot
 
 
 
-
-# ============================================================
-# GVA GROWTH PERCENTILE
-# 1 = LOWEST GVA GROWTH
-# 100 = HIGHEST GVA GROWTH
-# ============================================================
+#Growth percentile
 
 analysis_data_gva <- analysis_data %>%
   filter(
@@ -2102,9 +2033,7 @@ analysis_data_gva <- analysis_data %>%
   )
 
 
-# ============================================================
-# EXCLUDE LONDON FOR THE PLOTS
-# ============================================================
+#Removing london
 
 analysis_data_gva_plot <- analysis_data_gva %>%
   filter(
@@ -2127,9 +2056,7 @@ analysis_data_gva_plot <- analysis_data_gva %>%
     !is.na(HLE_current_F)
   )
 
-# ============================================================
-# GVA GROWTH PERCENTILE VS CURRENT LE / HLE
-# ============================================================
+#Looking at growth
 
 plot_gva_percentile_vs_current <- function(
     data,
